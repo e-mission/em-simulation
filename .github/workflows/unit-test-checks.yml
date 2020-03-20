@@ -19,13 +19,22 @@ jobs:
     - name: Set up miniconda
       uses: goanpeca/setup-miniconda@v1
       with:
-          auto-activate-base: true
+          activate-environment: ''
 #     - name: Setup Debug Session
 #       uses: P3TERX/debugger-action@master
     - name: Setup our environment
       shell: bash -l {0}
-      run: source setup/setup.sh
+      run: |
+        conda env list
+        python --version
+        source setup/setup.sh
     - name: Run unit tests
-      run: python -m unittest test/unit/*.py
+      shell: bash -l {0}
+      run: |
+        conda activate emsim
+        python -m unittest test/unit/*.py
     - name: Run script tests
-      run: python -m unittest test/scripts/*.py
+      shell: bash -l {0}
+      run: |
+        conda activate emsim
+        python -m unittest test/scripts/*.py
