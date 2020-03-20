@@ -17,4 +17,7 @@ jobs:
             conda info
             conda --version
             conda env list
+            python --version
             conda activate base
+            conda env list
+            python --version
