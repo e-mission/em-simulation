@@ -17,17 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up miniconda
-      run: |
-        wget https://repo.continuum.io/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh -O miniconda.sh
-        bash miniconda.sh -b -p $HOME/miniconda
-        source "$HOME/miniconda/etc/profile.d/conda.sh"
-        conda config --set always_yes yes --set changeps1 no
-        conda info -a
-        conda init bash
+      uses: goanpeca/setup-miniconda@v1
+    - name: Setup Debug Session
+      uses: mxschmitt/action-tmate@v2
     - name: Switch to environment
       run: conda activate base
-#     - name: Setup Debug Session
-#       uses: P3TERX/debugger-action@master
     - name: Setup our environment
       run: source setup/setup.sh
     - name: Run unit tests
