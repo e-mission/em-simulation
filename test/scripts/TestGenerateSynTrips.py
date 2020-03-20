@@ -9,4 +9,3 @@ class TestGenerateSynTrips(unittest.TestCase):
             retcode = sp.call("PYTHONPATH=. python bin/generate_syn_trips.py",
                 stderr=devnull, shell=True)
         self.assertEqual(retcode, 2)
-            
