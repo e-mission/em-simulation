@@ -23,6 +23,7 @@ jobs:
         source "$HOME/miniconda/etc/profile.d/conda.sh"
         conda config --set always_yes yes --set changeps1 no
         conda info -a
+        conda init bash
     - name: Switch to environment
       run: conda activate base
 #     - name: Setup Debug Session
