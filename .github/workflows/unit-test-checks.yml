@@ -21,10 +21,11 @@ jobs:
 #     - name: Setup Debug Session
 #       uses: P3TERX/debugger-action@master
     - name: Setup our environment
+      shell: bash
       run: |
+        conda init bash
         conda activate base
         source setup/setup.sh
-      shell: bash
     - name: Run unit tests
       run: python -m unittest test/unit/*.py
     - name: Run script tests
