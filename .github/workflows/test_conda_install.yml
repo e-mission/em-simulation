@@ -9,10 +9,12 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: goanpeca/setup-miniconda@v1
+      - uses: goanpeca/setup-miniconda@v1.0.2
       - name: Conda info
         shell: bash -l {0}
         run: |
             python --version
             conda info
             conda --version
+            conda env list
+            conda activate base
