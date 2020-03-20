@@ -19,7 +19,7 @@ jobs:
     - name: Set up miniconda
       uses: goanpeca/setup-miniconda@v1
       with:
-        miniconda-version: 4.3.30
+        miniconda-version: 4.5.1
         remove-profiles: false
     - name: Setup our environment
       run: source setup/setup.sh
