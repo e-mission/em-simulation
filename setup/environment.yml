@@ -1,10 +1,10 @@
 name: emsim
 channels:
 - defaults
-- conda-forge
 dependencies:
-- pip=20.0.2
+- pip=19.3.1
 - python=3.7.6
 - requests=2.22.0
 - numpy=1.18.1
-- arrow=0.15.5
+- scipy=1.4.1
+- arrow=0.13.1
