@@ -106,7 +106,7 @@ class FakeUser:
     def _create_markov_model(self, config):
         labels = [elem['label'].lower() for elem in config['locations']]
         transition_probs = config['transition_probabilities']
-        return estp.get_markov_chain(label, transition_probs)
+        return estp.get_markov_chain(labels, transition_probs)
 
     def _create_label_to_coordinate_map(self, config):
         locations = config['locations']
