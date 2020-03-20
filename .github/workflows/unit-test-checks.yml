@@ -19,7 +19,7 @@ jobs:
     - name: Set up miniconda
       uses: goanpeca/setup-miniconda@v1
       with:
-          activate-environment: base
+          auto-activate-base: true
 #     - name: Setup Debug Session
 #       uses: P3TERX/debugger-action@master
     - name: Setup our environment
