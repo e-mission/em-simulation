@@ -61,8 +61,8 @@ if __name__ == '__main__':
         n_labels = len(tour_conf["locations"])
         tour_conf["transition_probs"] = estp.generate_random_transition_prob(n_labels)
 
-    client = esc.EmissionFakeDataGenerator(api_config)
-    fake_user = client.create_fake_user(tour_config)
+    client = esc.EmissionFakeDataGenerator(api_conf)
+    fake_user = client.create_fake_user(tour_conf)
 
     measurements = []
     for _ in range(args.nTrips):
