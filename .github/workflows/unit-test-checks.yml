@@ -18,14 +18,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set up miniconda
       uses: goanpeca/setup-miniconda@v1
+      activate-environment: base
 #     - name: Setup Debug Session
 #       uses: P3TERX/debugger-action@master
     - name: Setup our environment
-      shell: bash
-      run: |
-        conda init bash
-        conda activate base
-        source setup/setup.sh
+      shell: bash -l {0}
+      run: source setup/setup.sh
     - name: Run unit tests
       run: python -m unittest test/unit/*.py
     - name: Run script tests
