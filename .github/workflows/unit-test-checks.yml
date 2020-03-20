@@ -20,6 +20,7 @@ jobs:
       uses: goanpeca/setup-miniconda@v1
       with:
         miniconda-version: 4.3.30
+        remove-profiles: false
     - name: Setup our environment
       run: source setup/setup.sh
     - name: Run unit tests
