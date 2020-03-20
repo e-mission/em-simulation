@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: unit + script tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  local-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up miniconda
+      uses: goanpeca/setup-miniconda@v1
+      with:
+          activate-environment: ''
+#     - name: Setup Debug Session
+#       uses: P3TERX/debugger-action@master
+    - name: Setup our environment
+      shell: bash -l {0}
+      run: |
+        conda env list
+        python --version
+        source setup/setup.sh
+    - name: Run unit tests
+      shell: bash -l {0}
+      run: |
+        conda activate emsim
+        python -m unittest test/unit/*.py
+    - name: Run script tests
+      shell: bash -l {0}
+      run: |
+        conda activate emsim
+        python -m unittest test/scripts/*.py

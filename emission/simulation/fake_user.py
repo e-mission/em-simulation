@@ -1,13 +1,13 @@
-
-from abc import ABC, abstractmethod
-from prob140 import MarkovChain 
+# standard imports
 import numpy as np
 import datetime
 import arrow 
 import requests
-#emission imports
-import emission.core.wrapper.user as ecwu
-from emission.net.ext_service.otp.otp import OTP, PathNotFoundException
+import pykov as pk
+
+# our imports
+import emission.simulation.transition_prob as estp
+# from emission.net.ext_service.otp.otp import OTP, PathNotFoundException
 
 class FakeUser:
     """
@@ -20,9 +20,9 @@ class FakeUser:
         self._uuid = config['uuid'] 
         # We need to set the time of ther user in the past to that the pipeline can find the entries.
         self._time_object = arrow.utcnow().shift(years=-1) 
-        self._trip_planer_client = OTP
+        # self._trip_planer_client = OTP
         self._current_state = config['initial_state']
-        self._markov_model = self._create_markow_model(config) #MarkovChain(config['addresses'], config['transition_probabilities'])
+        self._markov_model = self._create_markov_model(config)
         self._path = [self._current_state]
         self._label_to_coordinate_map = self._create_label_to_coordinate_map(config)
         self._trip_to_mode_map = self._create_trip_to_mode_map(config)
@@ -32,7 +32,7 @@ class FakeUser:
         #TODO: If we have already completed a trip, we could potentially cache the location data 
         # we get from Open Trip Planner and only modify the timestamps next time we take the same trip. 
         curr_loc = self._current_state
-        next_loc = self._markov_model.simulate_path(self._current_state, 1)[-1]
+        next_loc = self._markov_model.move(self._current_state)
 
        #If the next location is the same as the current location, return an empty list
         if next_loc == self._current_state:
@@ -103,10 +103,10 @@ class FakeUser:
         # TODO: 3 hours is an arbritrary value. Not sure what makes sense. 
         self._time_object = arrow.get(prev_trip_end_time).shift(hours=+3)
     
-    def _create_markow_model(self, config):
+    def _create_markov_model(self, config):
         labels = [elem['label'].lower() for elem in config['locations']]
-        transitions_probabilities = config['transition_probabilities']
-        return MarkovChain(labels, transitions_probabilities)
+        transition_probs = config['transition_probabilities']
+        return estp.get_markov_chain(labels, transition_probs)
 
     def _create_label_to_coordinate_map(self, config):
         locations = config['locations']
