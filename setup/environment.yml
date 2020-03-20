@@ -2,8 +2,8 @@ name: emsim
 channels:
 - defaults
 dependencies:
-- pip=9.0.1=py36_1
-- python=3.6.1=2
-- requests=2.14.2=py36_0
+- pip=9.0.1
+- python=3.6.1
+- requests=2.14.2
 - numpy=1.18.1
 - arrow=0.13.1

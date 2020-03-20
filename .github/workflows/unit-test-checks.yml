@@ -23,11 +23,13 @@ jobs:
         source "$HOME/miniconda/etc/profile.d/conda.sh"
         conda config --set always_yes yes --set changeps1 no
         conda info -a
-    - name: Setup Debug Session
-      uses: P3TERX/debugger-action@master
-#     - name: Setup our environment
-#       run: source setup/setup.sh
-#     - name: Run unit tests
-#       run: python -m unittest test/unit/*.py
-#     - name: Run script tests
-#       run: python -m unittest test/scripts/*.py
+    - name: Switch to environment
+      run: conda activate base
+#     - name: Setup Debug Session
+#       uses: P3TERX/debugger-action@master
+    - name: Setup our environment
+      run: source setup/setup.sh
+    - name: Run unit tests
+      run: python -m unittest test/unit/*.py
+    - name: Run script tests
+      run: python -m unittest test/scripts/*.py
