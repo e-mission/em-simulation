@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  local-test:
 
     runs-on: ubuntu-latest
 
@@ -19,7 +19,7 @@ jobs:
     - name: Set up miniconda
       uses: goanpeca/setup-miniconda@v1
     - name: Setup Debug Session
-      uses: mxschmitt/action-tmate@v2
+      uses: csexton/debugger-action@master
     - name: Switch to environment
       run: conda activate base
     - name: Setup our environment
