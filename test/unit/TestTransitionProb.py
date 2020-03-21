@@ -38,8 +38,8 @@ class TestTransitionProb(unittest.TestCase):
     def testGenRandomZero(self):
         tp = estp.generate_random_transition_prob(0)
         self.assertEqual(tp, [])
-        
-    def testGenRandomZero(self):
+
+    def testGenRandomNonZero(self):
         tp = estp.generate_random_transition_prob(10)
         self.assertEqual(len(tp), 10, "check row count")
         self.assertEqual(len(tp[0]), 10, "checking col count for first row")
