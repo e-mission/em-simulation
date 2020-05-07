@@ -45,3 +45,11 @@ class TestTransitionProb(unittest.TestCase):
         self.assertEqual(len(tp[0]), 10, "checking col count for first row")
         self.assertAlmostEqual(sum(tp[0]), 1, msg="check prob sum for first row")
         self.assertAlmostEqual(sum(tp[-1]), 1, msg="check prob sum for last row")
+
+    def testCounter(self):
+        import pykov
+        mc = pykov.Chain()
+        mc["A", "B"] += 1
+        self.assertEqual(mc["A", "B"], 1, msg="Increment counter once")
+        mc["A", "B"] += 1
+        self.assertEqual(mc["A", "B"], 2, msg="Increment counter twice")
