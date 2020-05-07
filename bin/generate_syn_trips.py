@@ -42,7 +42,7 @@ if __name__ == '__main__':
         default=None)
     parser.add_argument("travelDate",
         help="date on which to travel")
-    parser.add_argument("nTrips",
+    parser.add_argument("nTrips", type=int,
         help="number of trips to generate")
 
     logging.basicConfig(level=logging.DEBUG)

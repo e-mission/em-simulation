@@ -4,10 +4,11 @@ import datetime
 import arrow 
 import requests
 import pykov as pk
+import os
 
 # our imports
 import emission.simulation.transition_prob as estp
-# from emission.net.ext_service.otp.otp import OTP, PathNotFoundException
+import emission.net.ext_service.otp.otp as otp
 
 class FakeUser:
     """
@@ -20,7 +21,7 @@ class FakeUser:
         self._uuid = config['uuid'] 
         # We need to set the time of ther user in the past to that the pipeline can find the entries.
         self._time_object = arrow.utcnow().shift(years=-1) 
-        # self._trip_planer_client = OTP
+        self._trip_planer_client = otp.OTP(os.environ["OTP_SERVER"])
         self._current_state = config['initial_state']
         self._markov_model = self._create_markov_model(config)
         self._path = [self._current_state]
@@ -97,7 +98,7 @@ class FakeUser:
         time = "%s:%s" % (self._time_object.hour, self._time_object.minute)
         
         #TODO: Figure out how we should set bike
-        return self._trip_planer_client(curr_coordinate, next_coordinate, mode, date, time, bike=True)
+        return self._trip_planer_client.route(curr_coordinate, next_coordinate, mode, date, time, bike=True)
     
     def _update_time(self, prev_trip_end_time):
         # TODO: 3 hours is an arbritrary value. Not sure what makes sense. 
@@ -105,7 +106,7 @@ class FakeUser:
     
     def _create_markov_model(self, config):
         labels = [elem['label'].lower() for elem in config['locations']]
-        transition_probs = config['transition_probabilities']
+        transition_probs = config['transition_probs']
         return estp.get_markov_chain(labels, transition_probs)
 
     def _create_label_to_coordinate_map(self, config):
