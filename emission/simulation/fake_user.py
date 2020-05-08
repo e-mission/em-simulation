@@ -137,8 +137,8 @@ class FakeUser:
         print(response.content)
 
     def sync_data_to_server(self):
-        self._client.sync_data_to_server(self._measurements_cache, self._flush_cache,
-            self._report_error)
+        self._client.sync_data_to_server(self._email,
+            self._measurements_cache, self._flush_cache, self._report_error)
 
     def create_user(self):
         uuid = self._client.register_fake_user(self._tour_config['email'])

@@ -60,14 +60,14 @@ class EmissionFakeDataGenerator(Client):
             munged['metadata']['type'] = "sensor-data"
         return munged
 
-    def sync_data_to_server(self, measurements, success_callback, failure_callback):
+    def sync_data_to_server(self, email, measurements, success_callback, failure_callback):
         #Remove the _id field
         measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
         print(measurements_no_id[0])
         #Send data to server
         data = {
             'phone_to_server': measurements_no_id,
-            'user': self._email
+            'user': email
         }
 
         r = requests.post(self._config['upload_url'], json=data)
