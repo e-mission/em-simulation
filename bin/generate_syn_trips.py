@@ -3,9 +3,11 @@ import logging
 import argparse
 import json
 import random
+import arrow
 
 # our imports
 import emission.simulation.client as esc
+import emission.simulation.fake_user as esfu
 import emission.simulation.transition_prob as estp
 
 def get_config(config_arg):
@@ -40,6 +42,9 @@ if __name__ == '__main__':
     parser.add_argument("--seed",
         help="the random seed, for greater reproducibility",
         default=None)
+    parser.add_argument("-z", "--timezone",
+        help="override the timezone for the travelDate. Default is UTC. Full list is at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
+        default="UTC")
     parser.add_argument("travelDate",
         help="date on which to travel")
     parser.add_argument("nTrips", type=int,
@@ -49,6 +54,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     api_conf = get_config(args.api_conf)
+    if "EMISSION_SERVER" in os.environ:
+        api_conf["emission_server_base_url"] = os.environ["EMISSION_SERVER"]
     print(api_conf)
     tour_conf = get_config(args.tour_conf)
     print(tour_conf)
@@ -61,16 +68,11 @@ if __name__ == '__main__':
         n_labels = len(tour_conf["locations"])
         tour_conf["transition_probs"] = estp.generate_random_transition_prob(n_labels)
 
+    trajectory_start_ts = arrow.get(args.travelDate).replace(tzinfo=args.timezone)
+    print("Starting trips at %s = %s" % (arrow.get(trajectory_start_ts),
+        arrow.get(trajectory_start_ts).to(args.timezone)))
+
     client = esc.EmissionFakeDataGenerator(api_conf)
-    fake_user = client.create_fake_user(tour_conf)
-
-    measurements = []
-    for _ in range(args.nTrips):
-        temp = fake_user.take_trip()
-        print('# of location measurements:', len(temp))
-        measurements.append(temp)
-
-    print('Path:',fake_user._path)
-    len(fake_user._measurements_cache)
-    fake_user.sync_data_to_server()
-    len(fake_user._measurements_cache)
+    fake_user = esfu.FakeUser(trajectory_start_ts, args.nTrips, tour_conf, client)
+    fake_user.create_user()
+    fake_user.take_trips()
