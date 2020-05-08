@@ -4,16 +4,16 @@
     [
        {
             "label": "home",
-            "coordinate": [60.1740177, 24.9317945]
+            "coordinate": [60.1742492, 24.9314101]
         },
 
         {
             "label": "work",
-            "coordinate": [60.1927138, 24.9187956]
+            "coordinate": [60.1923327, 24.9172636]
         },
         {
             "label": "family",
-            "coordinate": [60.3230946, 24.8328016]
+            "coordinate": [60.3231711, 24.8336967]
         }
     ],
     "modes" : 

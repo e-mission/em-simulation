@@ -81,6 +81,17 @@ docker run --name otp-fi --network="sim" hsldevcom/opentripplanner:latest
 
 Start creating trips!
 
+In the SF Bay Area (valid from 2018-10-08 to 2019-10-07)
 ```
 PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
+```
+
+
+~In Finland (valid from 2018-10-08 to 2019-10-07)~ 💣 The sample file seems to
+have geocoding errors even when the source and destination are on the roadway
+network. Need to experiment further with what works and what doesn't
+
+```
+cp conf/tour.conf.fi.sample conf/tour.conf
+PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp-fi:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
 ```
