@@ -1,0 +1,28 @@
+{
+    "email" : "fake_user_129",
+    "locations" :
+    [
+       {
+            "label": "home",
+            "coordinate": [60.1740177, 24.9317945]
+        },
+
+        {
+            "label": "work",
+            "coordinate": [60.1927138, 24.9187956]
+        },
+        {
+            "label": "family",
+            "coordinate": [60.3230946, 24.8328016]
+        }
+    ],
+    "modes" : 
+    {
+        "CAR" : [["home", "family"]],
+        "TRANSIT" : [["home", "work"], ["work", "home"]]  
+    },
+
+    "default_mode": "CAR",
+    "initial_state" : "home",
+    "radius" : ".1"
+}
