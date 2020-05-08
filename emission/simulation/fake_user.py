@@ -12,22 +12,38 @@ import emission.net.ext_service.otp.otp as otp
 
 class FakeUser:
     """
-    Fake user class used to genreate synthetic data.
+    Fake user class used to generate synthetic data.
     """
 #TODO: Make FakeUser an abstract class and create a concrete implementation called EmissionFakeUser
-    def __init__(self, config={}):
-        self._config = config
-        self._email = config['email']
-        self._uuid = config['uuid'] 
+    def __init__(self, trajectory_start_ts, nTrips, tour_config, client):
+        self._nTrips = nTrips
+        self._client = client
+        self._tour_config = tour_config
+        self._email = tour_config['email']
         # We need to set the time of ther user in the past to that the pipeline can find the entries.
-        self._time_object = arrow.utcnow().shift(years=-1) 
+        self._time_object = trajectory_start_ts
         self._trip_planer_client = otp.OTP(os.environ["OTP_SERVER"])
-        self._current_state = config['initial_state']
-        self._markov_model = self._create_markov_model(config)
+        self._current_state = tour_config['initial_state']
+        self._markov_model = self._create_markov_model(tour_config)
         self._path = [self._current_state]
-        self._label_to_coordinate_map = self._create_label_to_coordinate_map(config)
-        self._trip_to_mode_map = self._create_trip_to_mode_map(config)
+        self._label_to_coordinate_map = self._create_label_to_coordinate_map(tour_config)
+        self._trip_to_mode_map = self._create_trip_to_mode_map(tour_config)
         self._measurements_cache = []
+
+    #
+    # BEGIN: Data generation functions
+    #
+    def take_trips(self):
+        measurements = []
+        for _ in range(self._nTrips):
+            temp = self.take_trip()
+            print('# of location measurements:', len(temp))
+            measurements.append(temp)
+
+        print('Path:', self._path)
+        len(self._measurements_cache)
+        self.sync_data_to_server()
+        len(self._measurements_cache)
 
     def take_trip(self):
         #TODO: If we have already completed a trip, we could potentially cache the location data 
@@ -68,31 +84,11 @@ class FakeUser:
     def add_measurements(self, entries):
         self._measurements_cache += entries
 
-    def sync_data_to_server(self):
-        #Remove the _id field
-        measurements_no_id = [self._remove_id_field(entry) for entry in self._measurements_cache]
-        print(measurements_no_id[0])
-        #Send data to server
-        data = {
-            'phone_to_server': measurements_no_id,
-            'user': self._email
-        }
-
-        r = requests.post(self._config['upload_url'], json=data)
-
-        #Check if sucessful
-        if r.ok:
-            self._flush_cache()
-            print("%d entries were sucessfully synced to the server" % len(measurements_no_id))
-        else:
-            print('Something went wrong when trying to sync your data. Try again or use save_cache_to_file to save your data.')
-            print(r.content)
-
     def _create_new_otp_trip(self, curr_coordinate, next_coordinate, cur_loc, next_loc):
         try:
             mode = self._trip_to_mode_map[(cur_loc, next_loc)]
         except KeyError:
-            mode = self._config['default_mode']
+            mode = self._tour_config['default_mode']
 
         date = "%s-%s-%s" % (self._time_object.month, self._time_object.day, self._time_object.year)
         time = "%s:%s" % (self._time_object.hour, self._time_object.minute)
@@ -123,20 +119,32 @@ class FakeUser:
             for edge in v:
                 new_map[tuple(edge)] = k
         return new_map
-    
-    @staticmethod
-    def _remove_id_field(entry):
-        munged = entry.copy()
-        del munged['_id']
-        if 'user_id' in munged:
-            del munged['user_id']
-        if 'write_local_dt' in munged['metadata']:
-            del munged['metadata']['write_local_dt']
-        if 'type' not in munged['metadata']:
-            munged['metadata']['type'] = "sensor-data"
-        return munged
-    
-    def _flush_cache(self):
+
+    #
+    # END: Data generation functions
+    #
+
+    #
+    # BEGIN: Server communication functions
+    # TODO: Move this out to some kind of server-client module?
+    #
+
+    def _flush_cache(self, response):
         self._measurements_cache = []
 
-        
+    def _report_error(self, response):
+        print("Error while saving data. Retry or use `save_cache_to_file`")
+        print(response.content)
+
+    def sync_data_to_server(self):
+        self._client.sync_data_to_server(self._email,
+            self._measurements_cache, self._flush_cache, self._report_error)
+
+    def create_user(self):
+        uuid = self._client.register_fake_user(self._tour_config['email'])
+        self._uuid = uuid
+        self._tour_config['uuid'] = uuid
+
+    #
+    # END: Server communication functions
+    #

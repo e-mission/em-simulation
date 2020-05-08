@@ -30,7 +30,6 @@ cd em-dataload
 ```
 
 Modify the config files to meet your needs
-  - e.g. set the `emission_server_base_url` in `conf/api.conf` to `http://server:8080`
 
 ```
 ls conf/
@@ -41,7 +40,6 @@ vim conf/api.conf
 
 If you are running this on a shared server, you may want to checkout and setup
 inside a docker container. 🚨 Note that due to differing uids, you may need to remove access control on the directory. 💣
-
 
 ```
 💣 chmod -R 777 .
@@ -55,10 +53,9 @@ cd /em-dataload
 source setup/setup.sh
 ```
 
-
 Start an OTP server docker
   - The sample conf uses locations in the SF bay area, so you probably want to start with [`alvinghouas/otp-sfbay:v1`](https://hub.docker.com/r/alvinghouas/otp-sfbay), published by @alvinalexander
-  - Alternatively, you can use the version from Finland, published through [the DigiTransit project](https://github.com/HSLdevcom/digitransit)
+  - Alternatively, you can use the [version from Finland](https://hub.docker.com/r/hsldevcom/opentripplanner), published through [the DigiTransit project](https://github.com/HSLdevcom/digitransit)
 
 🚨 Note that both of these are very resource intensive. You may not be able to run
 them on your laptop.⚡
@@ -71,8 +68,30 @@ docker run --name otp --network="sim" alvinghouas/otp-sfbay:v1
 09:52:07.245 INFO (GrizzlyServer.java:153) Grizzly server running.
 ```
 
-Start creating trips!
+or
 
 ```
-PYTHONPATH=. OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
+docker run --name otp-fi --network="sim" hsldevcom/opentripplanner:latest
+...
+06:25:03.201 INFO (Graph.java:736) Main graph read. |V|=3068494 |E|=7985474
+06:26:01.083 INFO (GraphIndex.java:182) Indexing graph...
+...
+
+```
+
+Start creating trips!
+
+In the SF Bay Area (valid from 2018-10-08 to 2019-10-07)
+```
+PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
+```
+
+
+~In Finland (valid from 2018-10-08 to 2019-10-07)~ 💣 The sample file seems to
+have geocoding errors even when the source and destination are on the roadway
+network. Need to experiment further with what works and what doesn't
+
+```
+cp conf/tour.conf.fi.sample conf/tour.conf
+PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp-fi:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
 ```

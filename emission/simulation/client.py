@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from emission.simulation.fake_user import FakeUser
 from emission.simulation.error import AddressNotFoundError
 import requests
 
@@ -8,28 +7,23 @@ class Client(ABC):
         super().__init__()
     
     @abstractmethod
-    def create_fake_user(self, config):
+    def register_fake_user(self, email):
         pass 
+
     @abstractmethod
-    def _parse_user_config(self, config):
+    def sync_data_to_server(self, measurements, success_callback, failure_callback):
         pass  
 
 class EmissionFakeDataGenerator(Client):
     def __init__(self, config):
         #TODO: Check that the config object has keys: emission_server_base_url, register_user_endpoint, user_cache_endpoint
+        config["register_url"] = config['emission_server_base_url'] + config['register_user_endpoint'] 
+        config["upload_url"] = config['emission_server_base_url'] + config['user_cache_endpoint'] 
         self._config = config
-        self._user_factory = FakeUser
 
-    def create_fake_user(self, config):
-        #TODO: parse the config object
-        uuid = self._register_fake_user(config['email'])
-        config['uuid'] = uuid
-        config['upload_url'] = self._config['emission_server_base_url'] + self._config['user_cache_endpoint']
-        return self._user_factory(config)
-
-    def _register_fake_user(self, email):
+    def register_fake_user(self, email):
         data = {'user': email}
-        url = self._config['emission_server_base_url'] + self._config['register_user_endpoint'] 
+        url = self._config['register_url']
         r = requests.post(url, json=data)
         r.raise_for_status()
         uuid = r.json()['uuid']
@@ -54,4 +48,33 @@ class EmissionFakeDataGenerator(Client):
 
         #check that all teh transition probabilites for every address adds up to one
 
-        
+    @staticmethod
+    def _remove_id_field(entry):
+        munged = entry.copy()
+        del munged['_id']
+        if 'user_id' in munged:
+            del munged['user_id']
+        if 'write_local_dt' in munged['metadata']:
+            del munged['metadata']['write_local_dt']
+        if 'type' not in munged['metadata']:
+            munged['metadata']['type'] = "sensor-data"
+        return munged
+
+    def sync_data_to_server(self, email, measurements, success_callback, failure_callback):
+        #Remove the _id field
+        measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
+        print(measurements_no_id[0])
+        #Send data to server
+        data = {
+            'phone_to_server': measurements_no_id,
+            'user': email
+        }
+
+        r = requests.post(self._config['upload_url'], json=data)
+
+        #Check if sucessful
+        if r.ok:
+            success_callback(r)
+        else:
+            failure_callback(r)
+
