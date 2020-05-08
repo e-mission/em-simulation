@@ -129,12 +129,12 @@ class FakeUser:
     # TODO: Move this out to some kind of server-client module?
     #
 
-    def _flush_cache(self):
+    def _flush_cache(self, response):
         self._measurements_cache = []
 
-    def _report_error(self):
+    def _report_error(self, response):
         print("Error while saving data. Retry or use `save_cache_to_file`")
-        print(r.content)
+        print(response.content)
 
     def sync_data_to_server(self):
         self._client.sync_data_to_server(self._measurements_cache, self._flush_cache,

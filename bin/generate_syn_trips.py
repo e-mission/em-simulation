@@ -4,6 +4,7 @@ import argparse
 import json
 import random
 import arrow
+import os
 
 # our imports
 import emission.simulation.client as esc

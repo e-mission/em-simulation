@@ -74,7 +74,7 @@ class EmissionFakeDataGenerator(Client):
 
         #Check if sucessful
         if r.ok:
-            success_callback()
+            success_callback(r)
         else:
-            failure_callback()
+            failure_callback(r)
 
