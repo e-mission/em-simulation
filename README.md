@@ -22,7 +22,7 @@ docker run --name db --network="sim" mongo:3.4
 docker run --name server -e "DB_HOST=db" -e "WEB_SERVER_HOST=0.0.0.0" --network="sim" emission/e-mission-server:latest
 ```
 
-Check out this repository
+Check out this repository (with the correct branch, etc)
 
 ```
 git clone https://github.com/e-mission/em-dataload.git
@@ -39,18 +39,17 @@ vim conf/api.conf
 ```
 
 If you are running this on a shared server, you may want to checkout and setup
-inside a docker container. 🚨 Note that due to differing uids, you may need to remove access control on the directory. 💣
+inside a docker container.
 
 ```
-💣 chmod -R 777 .
-docker run --name dataload --network="sim" -v $PWD:/em-dataload -it continuumio/miniconda3:4.4.10 /bin/bash
+docker build -t emission/dataload:latest .
+docker run --name dataload --network="sim" -it emission/dataload:latest /bin/bash
 ```
 
-(inside the container) setup the environment
+(inside the container) activate the environment
 
 ```
-cd /em-dataload
-source setup/setup.sh
+conda activate emsim
 ```
 
 Start an OTP server docker
@@ -81,9 +80,9 @@ docker run --name otp-fi --network="sim" hsldevcom/opentripplanner:latest
 
 Start creating trips!
 
-In the SF Bay Area (valid from 2018-10-08 to 2019-10-07)
+In the SF Bay Area (valid from at least 2018-01-01 to 2019-10-07)
 ```
-PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
+PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2018/05/04 10
 ```
 
 
