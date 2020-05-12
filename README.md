@@ -4,7 +4,73 @@ Simulate fake trips and travel through integration with an OTP server
 [![unit + script tests](https://github.com/e-mission/em-simulation/workflows/unit%20+%20script%20tests/badge.svg)](https://github.com/e-mission/em-dataload/actions?query=workflow%3A%22unit+%2B+script+tests%22)
 [![lint system checks](https://github.com/e-mission/em-simulation/workflows/lint%20system%20checks/badge.svg)](https://github.com/e-mission/em-dataload/actions?query=workflow%3A%22lint+system+checks%22)
 
-## Temporary, very manual instructions:##
+## `population.xml` → `/tmp/*.timeline`
+
+🚧 This will get more automated as I have the time to resolve
+https://github.com/e-mission/e-mission-docs/issues/534 and create a single
+docker-compose for the entire flow. 🚧
+
+Check out this repository (with the correct branch, etc)
+
+```
+git clone https://github.com/e-mission/em-dataload.git
+cd em-dataload
+```
+
+Copy your `population.xml` to the root directory
+
+```
+cp ... population.xml
+```
+
+If you are running this on a shared server, you may want to checkout and setup
+inside a docker container.
+
+```
+docker build -t emission/dataload:latest .
+docker run --name dataload --network="sim" -it emission/dataload:latest /bin/bash
+```
+
+(inside the container) activate the environment
+
+```
+conda activate emsim
+```
+
+Start an OTP server docker
+  - The sample conf uses locations in the SF bay area, so you probably want to start with [`alvinghouas/otp-sfbay:v1`](https://hub.docker.com/r/alvinghouas/otp-sfbay), published by @alvinalexander
+
+🚨 Note that this is fairly resource intensive. You may not be able to run
+them on your laptop.⚡
+    - if you see messages about the java process being killed, please switch to a server with more memory
+    - even on high performance servers, loading the graph will take ~ 10 mins during startup
+
+```
+docker run --name otp --network="sim" alvinghouas/otp-sfbay:v1
+...
+09:52:07.245 INFO (GrizzlyServer.java:153) Grizzly server running.
+```
+
+Start creating trips!
+
+In the SF Bay Area (valid from at least 2018-01-01 to 2019-10-07)
+```
+PYTHONPATH=. OTP_SERVER=http://otp:8080 python bin/fill_trajectories.py 2018-05-04
+```
+
+The output is in multiple timeline files under `/tmp` by default
+
+```
+ls -1 /tmp/filled_pop_*
+/tmp/filled_pop_Tour_0.timeline
+/tmp/filled_pop_Tour_1.timeline
+/tmp/filled_pop_Tour_2.timeline
+/tmp/filled_pop_Tour_3.timeline
+/tmp/filled_pop_Tour_4.timeline
+```
+
+
+## `tour.conf.sample` → server at URL `EM_SERVER`  ##
 
 🚧 This will get more automated as I have the time to resolve
 https://github.com/e-mission/e-mission-docs/issues/534 and create a single
@@ -82,7 +148,8 @@ Start creating trips!
 
 In the SF Bay Area (valid from at least 2018-01-01 to 2019-10-07)
 ```
-PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2018/05/04 10
+PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2018-05-04 10
+PYTHONPATH=. OTP_SERVER=http://otp:8080 python bin/fill_trajectories.py 2018-05-04
 ```
 
 
