@@ -107,7 +107,7 @@ class OTP(object):
             trps.append(self.turn_into_trip(_id, user_id, trip_id, False, itin))
         return trps
     
-    def get_measurements_along_route(self, user_id):
+    def get_measurements_along_route(self):
         """
         Returns a list of measurements along trip based on OTP data. Measurements inlcude
         location entries and motion entries. Motion entries are included so the pipeline can
