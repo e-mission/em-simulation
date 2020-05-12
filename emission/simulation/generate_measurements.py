@@ -21,12 +21,11 @@ class FakeUser:
         self._tour_date = tour_date
         self._measurements_cache = []
         self._tour = person["plan"]["act"]
-        self._tour_place_pairs = zip(self._tour, self._tour[1:])
+        self._tour_place_pairs = zip(self._tour, self._tour)
         self._otp_stub = otp.OTP(os.environ["OTP_SERVER"])
 
     def take_trips(self):
         for (start_place, end_place) in self._tour_place_pairs:
-            print(str(start_place) + " ----------> "+str(end_place))
             measurements = self.take_trip(start_place, end_place)
             self._measurements_cache += measurements
 
@@ -34,8 +33,8 @@ class FakeUser:
         return self._measurements_cache
 
     def take_trip(self, start_place, end_place):
-        start_loc = (float(start_place["@lat"]), float(start_place["@lon"]))
-        end_loc = (float(end_place["@lat"]), float(end_place["@lon"]))
+        start_loc = (start_place["@lat"], start_place["@lon"])
+        end_loc = (end_place["@lat"], end_place["@lon"])
         # Do we always have exactly one mode? assuming that is true for now...
         mode = start_place["leg"]["@mode"].upper()
         start_date = self._tour_date
