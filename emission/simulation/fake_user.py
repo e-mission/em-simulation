@@ -65,7 +65,7 @@ class FakeUser:
         # and a motion entry for each section.
        #TODO: If get_measurements_along_route returns a PathNotFound Exception, we should catch this and return an empty list(?) 
         print('>> Traveling from', curr_loc,'to', next_loc, '| Mode of transportation:', trip_planer_client.mode)
-        measurements = trip_planer_client.get_measurements_along_route(self._uuid)
+        measurements = trip_planer_client.get_measurements_along_route()
 
        # Here we update the current state 
        # We also update the time_object to make sure the next trip starts at a later time 
