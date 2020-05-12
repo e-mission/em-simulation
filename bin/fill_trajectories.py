@@ -26,6 +26,6 @@ if __name__ == '__main__':
     for person in person_list:
         fake_user = esgm.FakeUser(args.travelDate, person)
         fake_user.take_trips()
-        out_filename = self.output_prefix + person["@id"].replace(" ", "_")
+        out_filename = args.output_prefix + person["@id"].replace(" ", "_")
         with open(out_filename) as ofp:
             eso.sync_to_file(fake_user.get_measurements(), ofp)
