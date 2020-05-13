@@ -62,7 +62,8 @@ class EmissionFakeDataGenerator(Client):
 
     def sync_data_to_server(self, email, measurements, success_callback, failure_callback):
         #Remove the _id field
-        measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
+        #measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
+        measurements_no_id = measurements
         print(measurements_no_id[0])
         #Send data to server
         data = {
