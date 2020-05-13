@@ -1,7 +1,6 @@
 import logging
 
 import json
-import bson.json_util as bju
 import argparse
 
 import common
@@ -10,12 +9,30 @@ import os
 import gzip
 import requests
 import numpy as np
+import re
 
 import emission.simulation.fake_user as esfu
 import emission.simulation.client as escg
 
+def get_email(filename, regex):
+    result = regex.match(filename)
+    if result is None:
+        return None
+    else:
+        return result.group(1)
 
-args = None
+def load_user(client, file_name, email_regex):
+    user_email = get_email(file_name, email_regex)
+    fake_user_uuid = client.register_fake_user(user_email)
+    with open(file_name) as fp:
+        entries = json.load(fp)
+
+    print("For user %s, about to push %d entries to server %s" %
+        (user_email, len(entries), client_config["emission_server_base_url"]))
+
+    client.sync_data_to_server(user_email, entries,
+        lambda r: print("Success loading data %d" % r.status_code),
+        lambda r: print("Error loading data %s" % r))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -30,20 +47,25 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--debug", type=int,
         help="set log level to DEBUG")
 
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-c", "--create_spec",
-        help="create fake data points by communicating with an OTP server (currently unsupported since we are not running an OTP server)")
-    group.add_argument("-l", "--load_file",
-        help="load the data from the specified file")
-
-    parser.add_argument("email",
-        help="email/label to load the data for")
-
     parser.add_argument("remote_server",
         help="the remote server to load the data to")
 
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-f", "--input_file",
+        help='''
+            the input json file for the user
+            the user email/label is the part before the '.timeline' suffix
+            so for /tmp/shankari.july-22.timeline the email is 'shankari.july-22'
+        ''')
+    group.add_argument("-p", "--input_prefix",
+        help='''
+            the directory from which to read the input json files, one per user.
+            the user email/label is between the prefix and the '.timeline' suffix
+            so for /tmp/filled_pop_Tour_0.timeline with prefix = '/tmp/filled_pop_",
+            the email is 'Tour_0'
+        ''')
+
     args = parser.parse_args()
-    assert args.create_spec is None, "Creating fake data is currently unsupported"
 
     client_config = {
         "emission_server_base_url": args.remote_server,
@@ -51,53 +73,18 @@ if __name__ == '__main__':
         "user_cache_endpoint": "/usercache/put"
     }
 
-    user_config = {
-            "email" : args.email,
-    
-            "locations" :
-            [
-               {
-                    'label': 'home',
-                    'coordinate': [37.77264255,-122.399714854263]
-                },
-
-                {
-                    'label': 'work',
-                    'coordinate': [37.42870635,-122.140926605802]
-                },
-                {
-                    'label': 'family',
-                    'coordinate': [37.87119, -122.27388]
-                }
-            ],
-            "transition_probabilities":
-            [
-                np.array([ 0.46100375,  0.23107729,  0.30791896]),
-                np.array([ 0.46100375,  0.23107729,  0.30791896]),
-                np.array([ 0.46100375,  0.23107729,  0.30791896])
-            ],
-    
-            "modes" : 
-            {
-                "CAR" : [['home', 'family']],
-                "TRANSIT" : [['home', 'work'], ['work', 'home']]  
-            },
-
-            "default_mode": "CAR",
-            "initial_state" : "home",
-            "radius" : ".1"
-    }
-
     client = escg.EmissionFakeDataGenerator(client_config)
 
-    # Register the user
-    fake_user = client.create_fake_user(user_config)
-    entries = json.load(open(args.load_file), object_hook = bju.object_hook)
-    fake_user.add_measurements(entries)
+    if args.input_file:
+        regex = re.compile(r"(\S*).timeline")
+        load_user(client, args.input_file, regex)
+    else:
+        assert args.input_prefix is not None
+        regex = re.compile(r"{prefix}(\S*).timeline".format(prefix=args.input_prefix))
+        matching_files = common.read_files_with_prefix(args.input_prefix)
+        print("Found %d matching files for prefix %s" %
+            (len(matching_files), args.input_prefix))
+        for fn in matching_files:
+            load_user(client, fn, regex)
+            
 
-    print("About to push %d entries to server %s" %
-        (len(fake_user._measurements_cache), client_config["emission_server_base_url"]))
-
-    fake_user.sync_data_to_server()
-
-    print("After push, retained %d entries" % (len(fake_user._measurements_cache)))
