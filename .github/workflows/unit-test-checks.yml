@@ -35,7 +35,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate emsim
-        python -m unittest test/unit/*.py
+        PYTHONPATH=$PYTHONPATH:bin python -m unittest test/unit/*.py
     - name: Run script tests
       shell: bash -l {0}
       run: |
