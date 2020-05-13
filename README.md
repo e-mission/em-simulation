@@ -69,6 +69,12 @@ ls -1 /tmp/filled_pop_*
 /tmp/filled_pop_Tour_4.timeline
 ```
 
+Load the files to the server
+
+```
+PYTHONPATH=$PYTHONPATH:bin python bin/load_to_remote_server.py --input_prefix /tmp/filled_pop_ http://server:8080
+```
+
 
 ## `tour.conf.sample` → server at URL `EM_SERVER`  ##
 
