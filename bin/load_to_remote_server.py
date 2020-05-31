@@ -23,6 +23,8 @@ def get_email(filename, regex):
 
 def load_user(client, file_name, email_regex):
     user_email = get_email(file_name, email_regex)
+    if user_email is None:
+        raise EmailNotFoundInFileName(file_name)
     fake_user_uuid = client.register_fake_user(user_email)
     with open(file_name) as fp:
         entries = json.load(fp)

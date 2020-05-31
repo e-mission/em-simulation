@@ -51,7 +51,8 @@ class EmissionFakeDataGenerator(Client):
     @staticmethod
     def _remove_id_field(entry):
         munged = entry.copy()
-        del munged['_id']
+        if '_id' in munged:
+            del munged['_id']
         if 'user_id' in munged:
             del munged['user_id']
         if 'write_local_dt' in munged['metadata']:
@@ -62,8 +63,7 @@ class EmissionFakeDataGenerator(Client):
 
     def sync_data_to_server(self, email, measurements, success_callback, failure_callback):
         #Remove the _id field
-        #measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
-        measurements_no_id = measurements
+        measurements_no_id = [self._remove_id_field(entry) for entry in measurements]
         print(measurements_no_id[0])
         #Send data to server
         data = {
