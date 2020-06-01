@@ -41,7 +41,7 @@ household demographics of a region
        generated data has both its breadth and depth be configurable.
 1. From the `population.xml`, simulate potentially noisy, sensed points along
     the trajectories.
-    - This repo has a [simple implementation](). The implementation does not
+    - This repo has a [simple implementation](#populationxml--tmptimeline). The implementation does not
       currently introduce any noise. The data is perfectly reconstructed from
       the trajectories.
     - There are more sophisticated implementations including [Matsim](), and
@@ -118,7 +118,7 @@ ls -1 /tmp/filled_pop_*
 /tmp/filled_pop_Tour_4.timeline
 ```
 
-## Load the files to the server
+## `/tmp/*.timeline` → `http://<server>:8080`
 
 ```bash
 PYTHONPATH=$PYTHONPATH:bin python bin/load_to_remote_server.py --input_prefix /tmp/filled_pop_ http://server:8080
