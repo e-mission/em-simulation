@@ -22,6 +22,14 @@ class TestLoadToRemoteServer(unittest.TestCase):
         print("<<<< expected error ----")
         self.assertEqual(retcode, 2)
 
+    def testInvalidFileName(self):
+        print(">>>> expected error ----")
+        with open("/dev/null", "w") as devnull:
+            retcode = sp.call("PYTHONPATH=. python bin/load_to_remote_server.py --input_file=/tmp/shankari.july-22 http://server:8080",
+                shell=True)
+        print("<<<< expected error ----")
+        self.assertEqual(retcode, 1)
+
     def testFileInput(self):
         print(">>>> expected error ----")
         with open("/dev/null", "w") as devnull:

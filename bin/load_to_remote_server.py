@@ -13,6 +13,7 @@ import re
 
 import emission.simulation.fake_user as esfu
 import emission.simulation.client as escg
+import emission.simulation.error as eser
 
 def get_email(filename, regex):
     result = regex.match(filename)
@@ -23,6 +24,8 @@ def get_email(filename, regex):
 
 def load_user(client, file_name, email_regex):
     user_email = get_email(file_name, email_regex)
+    if user_email is None:
+        raise eser.EmailNotFoundInFileName(file_name)
     fake_user_uuid = client.register_fake_user(user_email)
     with open(file_name) as fp:
         entries = json.load(fp)

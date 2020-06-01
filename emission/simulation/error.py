@@ -8,3 +8,9 @@ class AddressNotFoundError(Error):
         self.message = message
         self.address = address 
 
+class EmailNotFoundInFileName(Error):
+    """ Exception raised when the file to load has an invalid file name
+    """
+
+    def __init__(self, invalid_file_name):
+        self.invalid_file_name = invalid_file_name

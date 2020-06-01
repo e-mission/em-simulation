@@ -35,3 +35,6 @@ class TestTransitionProb(unittest.TestCase):
 
         # fails with ' '
         self.assertIsNone(ltrs.get_email("/tmp/filled_pop_Tour 0.timeline", regex))
+
+        # fails if there is no timeline
+        self.assertIsNone(ltrs.get_email("/tmp/filled_pop_Tour_0", regex))
