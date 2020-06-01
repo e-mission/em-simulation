@@ -12,46 +12,28 @@ household demographics of a region
     - Integrate with Open Street Map: @njriasan has implemented but not yet checked in
 1. Assign travel demand to the agents: two main options ⟹  `population.xml`
     1. From an existing household travel survey, for each agent:
-        - find a travel diary that matches the agent characteristics (e.g.
-          gender, age, employment)
-        - step through the travel diary, and for each activity, find a random
-          location from Open Street Map for that activity at that distance
-        - create a plan for the agent with those locations and the departure
-          times from the travel diary
+        - find a travel diary that matches the agent characteristics (e.g.  gender, age, employment)
+        - step through the travel diary, and for each activity, find a random location from Open Street Map for that activity at that distance
+        - create a plan for the agent with those locations and the departure times from the travel diary
         - add the agent plan to the population.xml
         - @njriasan has implemented but not yet checked in
 
-       **Note** that travel diaries are short, so this will typically only generate
-       1-2 days worth of data for a single user. But there will be many users. So the
-       generated data will be **broad but shallow**.
-
+       **Note** that travel diaries are short, so this will typically only generate 1-2 days worth of data for a single user. But there will be many users. So the generated data will be **broad but shallow**.
 
     1. For each agent
-        - create a graph representation of their travel by specifying
-          transition probabilities between states. The exact procedure for
-          creating such a graph is TBD, but a naive implementation would simply have
-          random transition values.
-        - walk through the transition graph based on the probabilities and
-          generate a plan for the agent. Note that this can and probably
-          should be multi-day.
+        - create a graph representation of their travel by specifying transition probabilities between states. The exact procedure for creating such a graph is TBD, but a naive implementation would simply have random transition values.
+        - walk through the transition graph based on the probabilities and generate a plan for the agent. Note that this can and probably should be multi-day.
         - add the agent plan to the population.xml
         - simple implementation coming soon
 
-       **Note** we can walk the transition graph for as long as we want. So the
-       generated data has both its breadth and depth be configurable.
+       **Note** we can walk the transition graph for as long as we want. So the generated data has both its breadth and depth be configurable.
+
 1. From the `population.xml`, simulate potentially noisy, sensed points along
     the trajectories.
-    - This repo has a [simple implementation](#populationxml--tmptimeline). The implementation does not
-      currently introduce any noise. The data is perfectly reconstructed from
-      the trajectories.
-    - There are more sophisticated implementations including [Matsim](), and
-      the [LBNL extension, BEAM](). These are typically used to understand
-      traffic assignment, so the travel trajectories are simulated as links. This is
-      not very useful for generating fake e-mission data since we get actual sensor
-      data. Integrating with Matsim or BEAM in order to generate both link and
-      sensor data is a future extension.
+    - This repo has a [simple implementation](#populationxml--tmptimeline). The implementation does not currently introduce any noise. The data is perfectly reconstructed from the trajectories.
+    - There are more sophisticated implementations including [Matsim](https://www.matsim.org/), and the [LBNL extension, BEAM](http://beam.lbl.gov/). These are typically used to understand traffic assignment, so the travel trajectories are simulated as links. This is not very useful for generating fake e-mission data since we get actual sensor data. Integrating with Matsim or BEAM in order to generate both link and sensor data is a future extension.
 1. Save sensed points to an e-mission server
-    - This repo has a [simple implementation]()
+    - This repo has a [simple implementation](#tmptimeline--httpserver8080)
 
 ## `population.xml` → `/tmp/*.timeline`
 
