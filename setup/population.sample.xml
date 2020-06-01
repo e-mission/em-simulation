@@ -1,0 +1,81 @@
+<plans>
+  <person id="Tour 0" student="no" employed="yes">
+    <plan selected="yes">
+      <act type="home" lat="37.879962" lon="-122.266788" end_time="5:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Work" lat="37.641866" lon="-122.4918575" end_time="15:30">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.879962" lon="-122.266788"/>
+    </plan>
+  </person>
+  <person id="Tour 1" student="no" employed="yes">
+    <plan selected="yes">
+      <act type="home" lat="37.876181" lon="-122.26024" end_time="12:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Recreational Activities" lat="37.9144016" lon="-122.3503173" end_time="13:05">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.876181" lon="-122.26024"/>
+    </plan>
+  </person>
+  <person id="Tour 2" student="no" employed="yes">
+    <plan selected="yes">
+      <act type="home" lat="37.8787889" lon="-122.2750961" end_time="5:10">
+        <leg mode="Car"/>
+      </act>
+      <act type="Work" lat="37.793764" lon="-122.4011101" end_time="17:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.8787889" lon="-122.2750961"/>
+    </plan>
+  </person>
+  <person id="Tour 3" student="no" employed="no">
+    <plan selected="yes">
+      <act type="home" lat="37.879288" lon="-122.266765" end_time="10:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Recreational Activities" lat="37.8062589" lon="-122.2706011" end_time="11:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.879288" lon="-122.266765" end_time="11:15">
+        <leg mode="Car"/>
+      </act>
+      <act type="Other Errands" lat="37.8701461" lon="-122.2825934" end_time="11:28">
+        <leg mode="Walk"/>
+      </act>
+      <act type="Other Errands" lat="37.8722238" lon="-122.2662187" end_time="11:38">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.879288" lon="-122.266765" end_time="13:30">
+        <leg mode="Bicyle"/>
+      </act>
+      <act type="Health care" lat="37.3364243" lon="-121.9996425" end_time="15:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Buy Goods" lat="37.3204051" lon="-121.9482821" end_time="16:00">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.879288" lon="-122.266765" end_time="17:15">
+        <leg mode="Car"/>
+      </act>
+      <act type="Buy Goods" lat="37.8571694" lon="-122.2532413" end_time="17:45">
+        <leg mode="Transit"/>
+      </act>
+      <act type="Home" lat="37.879288" lon="-122.266765"/>
+    </plan>
+  </person>
+  <person id="Tour 4" student="yes" employed="yes">
+    <plan selected="yes">
+      <act type="home" lat="37.8789132" lon="-122.2667213" end_time="7:25">
+        <leg mode="Car"/>
+      </act>
+      <act type="School" lat="37.8529079" lon="-122.266305" end_time="15:15">
+        <leg mode="Car"/>
+      </act>
+      <act type="Home" lat="37.8789132" lon="-122.2667213"/>
+    </plan>
+  </person>
+</plans>
