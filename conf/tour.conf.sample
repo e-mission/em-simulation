@@ -1,28 +1,28 @@
 {
     "email" : "fake_user_129",
-    "locations" :
-    [
+    "locations" : [
        {
             "label": "home",
-            "coordinate": [37.77264255,-122.399714854263]
+            "coordinate": [37.77264255,-122.399714854263],
+            "dwell_hours": {"loc": 16, "scale": 2}
         },
-
         {
             "label": "work",
-            "coordinate": [37.42870635,-122.140926605802]
+            "coordinate": [37.42870635,-122.140926605802],
+            "dwell_hours": {"loc": 8, "scale": 2}
         },
         {
             "label": "family",
-            "coordinate": [37.87119, -122.27388]
+            "coordinate": [37.87119, -122.27388],
+            "dwell_hours": {"loc": 2, "scale": 1}
         }
     ],
-    "modes" : 
-    {
-        "CAR" : [["home", "family"]],
-        "TRANSIT" : [["home", "work"], ["work", "home"]]  
+    "modes": {
+        "WALK": {"max_km": 1, "kmph": 5, "weight": 2},
+        "BICYCLE": {"max_km": 5, "kmph": 20, "weight": 5},
+        "TRANSIT": {"kmph": 60, "weight": 2},
+        "CAR": {"kmph": 80, "weight": 1}
     },
-
-    "default_mode": "CAR",
     "initial_state" : "home",
     "radius" : ".1"
 }

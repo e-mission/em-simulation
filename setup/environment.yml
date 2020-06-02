@@ -17,3 +17,4 @@ dependencies:
     - geopy==1.21.*
     - attrdict==2.0.0
     - bson==0.5.9
+    - haversine==2.2.0
