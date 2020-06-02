@@ -11,7 +11,6 @@ import requests
 import numpy as np
 import re
 
-import emission.simulation.fake_user as esfu
 import emission.simulation.client as escg
 import emission.simulation.error as eser
 
