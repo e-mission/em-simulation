@@ -7,9 +7,9 @@ import arrow
 import os
 
 # our imports
-import emission.simulation.client as esc
-import emission.simulation.fake_user as esfu
+import emission.simulation.generate_trips as esgt
 import emission.simulation.transition_prob as estp
+import emission.simulation.output as eso
 
 def get_config(config_arg):
     if type(config_arg) == list:
@@ -31,33 +31,24 @@ def get_config(config_arg):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--api_conf",
-        help="the configuration for the client",
-        default=["conf/api.conf", "conf/api.conf.sample"])
     parser.add_argument("--tour_conf",
         help="the configuration for the user's tour",
         default=["conf/tour.conf", "conf/tour.conf.sample"])
+    parser.add_argument("--outfile",
+        help="the file to save the generated trips to",
+        default="population.xml")
     parser.add_argument("--generate_random_prob",
         help="generate a random transition probability matrix",
         action='store_true')
     parser.add_argument("--seed",
         help="the random seed, for greater reproducibility",
         default=None)
-    parser.add_argument("-z", "--timezone",
-        help="override the timezone for the travelDate. Default is UTC. Full list is at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones",
-        default="UTC")
-    parser.add_argument("travelDate",
-        help="date on which to travel")
     parser.add_argument("nTrips", type=int,
         help="number of trips to generate")
 
     logging.basicConfig(level=logging.DEBUG)
     args = parser.parse_args()
 
-    api_conf = get_config(args.api_conf)
-    if "EMISSION_SERVER" in os.environ:
-        api_conf["emission_server_base_url"] = os.environ["EMISSION_SERVER"]
-    print(api_conf)
     tour_conf = get_config(args.tour_conf)
     print(tour_conf)
 
@@ -69,11 +60,6 @@ if __name__ == '__main__':
         n_labels = len(tour_conf["locations"])
         tour_conf["transition_probs"] = estp.generate_random_transition_prob(n_labels)
 
-    trajectory_start_ts = arrow.get(args.travelDate).replace(tzinfo=args.timezone)
-    print("Starting trips at %s = %s" % (arrow.get(trajectory_start_ts),
-        arrow.get(trajectory_start_ts).to(args.timezone)))
-
-    client = esc.EmissionFakeDataGenerator(api_conf)
-    fake_user = esfu.FakeUser(trajectory_start_ts, args.nTrips, tour_conf, client)
-    fake_user.create_user()
-    fake_user.take_trips()
+    fake_user = esgt.FakeUser(args.nTrips, tour_conf)
+    act_list = fake_user.take_trips()
+    eso.personlist2population(args.outfile, tour_conf["email"], act_list)

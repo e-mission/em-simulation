@@ -35,23 +35,13 @@ household demographics of a region
 1. Save sensed points to an e-mission server
     - This repo has a [simple implementation](#tmptimeline--httpserver8080)
 
-## `population.xml` → `/tmp/*.timeline`
-
-🚧 This will get more automated as I have the time to resolve
-https://github.com/e-mission/e-mission-docs/issues/534 and create a single
-docker-compose for the entire flow. 🚧
+## Shared setup ##
 
 Check out this repository (with the correct branch, etc)
 
 ```bash
 git clone https://github.com/e-mission/em-dataload.git
 cd em-dataload
-```
-
-Copy your `population.xml` to the root directory. If you want to test this, and don't have a `population.xml`, you can use the sample.
-
-```bash
-cp setup/population.sample.xml population.xml
 ```
 
 If you are running this on a shared server, you may want to checkout and setup
@@ -62,10 +52,35 @@ docker build -t emission/dataload:latest .
 docker run --name dataload --network="sim" -it emission/dataload:latest /bin/bash
 ```
 
+If you are running this manually instead:
+    - follow the [setup steps from the CI](.github/workflows/unit-test-checks.yml)
+    - **Note** do not skip any steps after the checkout, including installing miniconda.
+    - The steps are guaranteed to work if the most recent test run is green.
+
 (inside the container) activate the environment
 
 ```bash
 conda activate emsim
+```
+
+## `tour.conf.sample` → `population.xml` ##
+
+🎉 This is much easier to run since it has no dependencies on any external services. 🎉
+
+1. Create a tour model based on your assumptions. If you want to just test this out, the script will use [the sample](conf/tour.conf.sample).
+
+2. Run the working version of the script from the [script tests](test/scripts/TestGenerateSynTrips.py). This is guaranteed to work if the test is green.
+
+## `population.xml` → `/tmp/*.timeline`
+
+🚧 This will get more automated as I have the time to resolve
+https://github.com/e-mission/e-mission-docs/issues/534 and create a single
+docker-compose for the entire flow. 🚧
+
+Copy your `population.xml` to the root directory. If you want to test this, and don't have a `population.xml`, you can use the sample, or [create one from the tour model](#tourconfsample--populationxml).
+
+```bash
+cp setup/population.sample.xml population.xml
 ```
 
 Start an OTP server docker
@@ -110,96 +125,4 @@ The same script can also be used to load files downloaded from the client (Profi
 
 ```bash
 PYTHONPATH=$PYTHONPATH:bin python bin/load_to_remote_server.py --input_file setup/shankari_2015-07-22.timeline http://server:8080
-```
-
-## `tour.conf.sample` → server at URL `EM_SERVER`  ##
-
-🚧 This will get more automated as I have the time to resolve
-https://github.com/e-mission/e-mission-docs/issues/534 and create a single
-docker-compose for the entire flow. 🚧
-
-```
-```
-
-If you don't already have an e-mission server, start up a simple one to store
-the simulated trips.
-
-```
-docker network create -d bridge sim
-docker run --name db --network="sim" mongo:3.4
-docker run --name server -e "DB_HOST=db" -e "WEB_SERVER_HOST=0.0.0.0" --network="sim" emission/e-mission-server:latest
-```
-
-Check out this repository (with the correct branch, etc)
-
-```
-git clone https://github.com/e-mission/em-dataload.git
-cd em-dataload
-```
-
-Modify the config files to meet your needs
-
-```
-ls conf/
-cp conf/api.conf.sample conf/api.conf
-vim conf/api.conf
-....
-```
-
-If you are running this on a shared server, you may want to checkout and setup
-inside a docker container.
-
-```
-docker build -t emission/dataload:latest .
-docker run --name dataload --network="sim" -it emission/dataload:latest /bin/bash
-```
-
-(inside the container) activate the environment
-
-```
-conda activate emsim
-```
-
-Start an OTP server docker
-  - The sample conf uses locations in the SF bay area, so you probably want to start with [`alvinghouas/otp-sfbay:v1`](https://hub.docker.com/r/alvinghouas/otp-sfbay), published by @alvinalexander
-  - Alternatively, you can use the [version from Finland](https://hub.docker.com/r/hsldevcom/opentripplanner), published through [the DigiTransit project](https://github.com/HSLdevcom/digitransit)
-
-🚨 Note that both of these are very resource intensive. You may not be able to run
-them on your laptop.⚡
-    - if you see messages about the java process being killed, please switch to a server with more memory
-    - even on high performance servers, loading the graph will take ~ 10 mins during startup
-
-```
-docker run --name otp --network="sim" alvinghouas/otp-sfbay:v1
-...
-09:52:07.245 INFO (GrizzlyServer.java:153) Grizzly server running.
-```
-
-or
-
-```
-docker run --name otp-fi --network="sim" hsldevcom/opentripplanner:latest
-...
-06:25:03.201 INFO (Graph.java:736) Main graph read. |V|=3068494 |E|=7985474
-06:26:01.083 INFO (GraphIndex.java:182) Indexing graph...
-...
-
-```
-
-Start creating trips!
-
-In the SF Bay Area (valid from at least 2018-01-01 to 2019-10-07)
-```
-PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp:8080 python bin/generate_syn_trips.py --generate_random_prob 2018-05-04 10
-PYTHONPATH=. OTP_SERVER=http://otp:8080 python bin/fill_trajectories.py 2018-05-04
-```
-
-
-~In Finland (valid from 2018-10-08 to 2019-10-07)~ 💣 The sample file seems to
-have geocoding errors even when the source and destination are on the roadway
-network. Need to experiment further with what works and what doesn't
-
-```
-cp conf/tour.conf.fi.sample conf/tour.conf
-PYTHONPATH=. EMISSION_SERVER=http://server:8080 OTP_SERVER=http://otp-fi:8080 python bin/generate_syn_trips.py --generate_random_prob 2020/05/04 10
 ```

@@ -5,7 +5,7 @@ import re
 import common
 import load_to_remote_server as ltrs
 
-class TestTransitionProb(unittest.TestCase):
+class TestBinFunctions(unittest.TestCase):
     def testReadFilesWithPrefix(self):
         testPrefix="test_read_files_with_prefix_"
         with tempfile.TemporaryDirectory() as tmpdirname:
